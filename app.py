@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pylibdmtx.pylibdmtx import decode
@@ -36,12 +37,24 @@ def decode_datamatrix():
             # Abre a imagem usando a biblioteca Pillow
             image = Image.open(file.stream)
 
-            # Tenta decodificar o Data Matrix na imagem
-            decoded_objects = decode(image)
+            # --- Otimização da Imagem ---
+            print("Otimizando a imagem...")
+            # Converte para tons de cinza (L = Luminance)
+            optimized_image = image.convert('L')
+
+            # Redimensiona a imagem se ela for maior que 1200x1200 pixels, mantendo a proporção.
+            # Este é um bom equilíbrio entre performance e precisão da leitura.
+            MAX_SIZE = (1200, 1200)
+            optimized_image.thumbnail(MAX_SIZE, Image.Resampling.LANCZOS)
+            print(f"Imagem redimensionada para: {optimized_image.size}")
+            # --- Fim da Otimização ---
+
+            # Tenta decodificar o Data Matrix na imagem otimizada
+            print("Tentando decodificar a imagem otimizada...")
+            decoded_objects = decode(optimized_image)
 
             if decoded_objects:
                 # Extrai os dados decodificados
-                # O resultado é uma lista, vamos pegar o primeiro e decodificar para string
                 data = [obj.data.decode('utf-8') for obj in decoded_objects]
                 print(f"Data Matrix lido com sucesso: {data}")
                 return jsonify({'success': True, 'data': data})
