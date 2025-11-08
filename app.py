@@ -9,6 +9,13 @@ app = Flask(__name__)
 # Habilita o CORS para permitir requisições do frontend
 CORS(app)
 
+@app.route('/')
+def health_check():
+    """
+    Rota de health check para o Render.
+    """
+    return jsonify({'status': 'ok'}), 200
+
 @app.route('/decode', methods=['POST'])
 def decode_datamatrix():
     """
