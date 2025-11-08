@@ -21,4 +21,5 @@ COPY . .
 EXPOSE 10000
 
 # Comando para iniciar a aplicação quando o container for executado
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]
+# Aumenta o timeout para 120 segundos para lidar com processamento de imagem lento
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "--timeout", "120", "app:app"]
